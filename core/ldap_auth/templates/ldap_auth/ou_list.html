@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<<h2>Organizational Units</h2>
+<form method="post" action="{% url 'export_users' ldap_conn.id %}">
+    {% csrf_token %}
+    <ul>
+        {% for ou in ous %}
+            <li>
+                <input type="checkbox" name="ous" value="{{ ou.entry_dn }}">
+                {{ ou.ou }}
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Export Users</button>
+</form>
+
+</body>
+</html>
