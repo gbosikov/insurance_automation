@@ -17,7 +17,7 @@ def connect_to_ldap(ldap_conn: LDAPConnection):
             server,
             user=f"{ldap_conn.domain_name.replace('.com', '')}\\{ldap_conn.username}",
             password=ldap_conn.password,
-            authentication=SIMPLE,  # Измените NTLM на SIMPLE
+            authentication=SIMPLE,
             auto_bind=True
         )
         return conn
@@ -42,7 +42,7 @@ def get_organizational_units(conn, search_base: str):
                 attributes=['ou']
             )
             ous = conn.entries
-            cache.set(cache_key, ous, timeout=3600)  # Кешируем на 1 час
+            cache.set(cache_key, ous, timeout=3600)
         except LDAPException as e:
             print(f"Error fetching organizational units: {e}")
             ous = []

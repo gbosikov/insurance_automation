@@ -41,19 +41,29 @@ class LDAPService:
             self.conn.search(
                 search_base=ou,
                 search_filter='(objectClass=person)',
-                attributes=['cn', 'mail', 'telephoneNumber']
+                attributes=['givenName',
+                            'sn',
+                            'cn',
+                            'sAMAccountName',
+                            'mail',
+                            'telephoneNumber']
             )
 
             for entry in self.conn.entries:
-                username = entry.cn.value
-                email = entry.mail.value
-                phone = entry.telephoneNumber.value if entry.telephoneNumber else None
+                username = entry.sAMAccountName.value
+                first_name = entry.givenName.value if entry.givenName else ''
+                last_name = entry.sn.value if entry.sn.value else ''
+                email = entry.mail.value if entry.mail else ''
+                phone = entry.telephoneNumber.value if entry.telephoneNumber else ''
 
                 # Создаем пользователя, если его нет в базе данных
-                user, created = User.objects.get_or_create(username=username, defaults={
-                    'email': email,
-                    'is_active': True,
-                })
+                user, created = User.objects.get_or_create(username=username,
+                                                           defaults={'email': email,
+                                                                     'is_active': True,
+                                                                     'is_superuser': False,
+                                                                     'first_name': first_name,
+                                                                     'last_name': last_name,
+                                                                     })
 
                 if created:
                     user.set_password(User.objects.make_random_password())
